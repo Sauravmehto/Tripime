@@ -33,7 +33,7 @@ Dates outside this range return a clear validation error.
 ## Prerequisites
 
 - Node.js 20+
-- Python **3.11** (recommended; 3.14 may lack pydantic wheels on Windows)
+- Python **3.11** recommended (3.12–3.14 also work with current `requirements.txt`)
 
 ## Backend setup
 
@@ -121,13 +121,13 @@ Push this repo to GitHub, then host:
 
 1. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** (or **Web Service**) → connect the GitHub repo.
 2. If using Blueprint, Render reads [`render.yaml`](render.yaml) (`rootDir: backend`).
-3. **Critical — pin Python 3.11** (do not use 3.14). In **Environment**, add:
+3. **Pin Python (recommended).** In **Environment**, add:
 
 | Variable | Value |
 |----------|--------|
 | `PYTHON_VERSION` | `3.11.9` |
 
-Without this, Render may pick Python 3.14 and the build fails on `pydantic-core` (no wheels / Rust build error).
+Current `requirements.txt` also installs on Render’s default 3.14 (prebuilt wheels). Older pins (`pydantic==2.11.7`) fail on 3.14 with a maturin/Rust build error.
 
 4. Set the other environment variables (Blueprint marks several as “sync: false” — fill them in the UI):
 
@@ -144,7 +144,7 @@ Without this, Render may pick Python 3.14 and the build fails on `pydantic-core`
 - Build: `python scripts/render_build.py`
 - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-   The build script **fails immediately** if Python is not 3.11, with instructions to set `PYTHON_VERSION`.
+   Prefer `PYTHON_VERSION=3.11.9`. If the log still shows 3.14, updated deps should still install; use **Clear build cache & deploy** after pushing `requirements.txt`.
 
 6. After deploy, open `https://YOUR-API.onrender.com/api/health` — should return `{"ok":true,...}`.
 
