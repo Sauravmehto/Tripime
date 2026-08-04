@@ -121,7 +121,15 @@ Push this repo to GitHub, then host:
 
 1. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** (or **Web Service**) → connect the GitHub repo.
 2. If using Blueprint, Render reads [`render.yaml`](render.yaml) (`rootDir: backend`).
-3. Set environment variables (Blueprint marks several as “sync: false” — fill them in the UI):
+3. **Critical — pin Python 3.11** (do not use 3.14). In **Environment**, add:
+
+| Variable | Value |
+|----------|--------|
+| `PYTHON_VERSION` | `3.11.9` |
+
+Without this, Render may pick Python 3.14 and the build fails on `pydantic-core` (no wheels / Rust build error).
+
+4. Set the other environment variables (Blueprint marks several as “sync: false” — fill them in the UI):
 
 | Variable | Example |
 |----------|---------|
@@ -131,13 +139,17 @@ Push this repo to GitHub, then host:
 | `CORS_ORIGINS` | `https://YOUR-SITE.netlify.app` (add custom domain later if any) |
 | `SMTP_*` | optional until you want real confirmation emails |
 
-4. After deploy, open `https://YOUR-API.onrender.com/api/health` — should return `{"ok":true,...}`.
+5. Build / start (Root Directory = `backend`):
+
+- Build: `python --version && pip install --upgrade pip && pip install -r requirements.txt`
+- Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+6. After deploy, open `https://YOUR-API.onrender.com/api/health` — should return `{"ok":true,...}`.
 
 **Notes**
 
 - Free Render services **sleep** when idle; the first request after sleep can take ~30–60s.
 - Disk is **ephemeral**: `backend/data/bookings.json` can reset on redeploy/restart. Fine for demos; use a database for production persistence later.
-
 ### 2. Frontend on Netlify
 
 1. [Netlify](https://app.netlify.com) → **Add new site** → **Import from Git** → this repo.
