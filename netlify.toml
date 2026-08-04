@@ -1,0 +1,16 @@
+# Netlify — static frontend only (API runs on Render).
+# Site settings: Base directory = frontend (also set below).
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback for React Router (/admin, /booking/*, etc.)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
