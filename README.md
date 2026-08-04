@@ -141,8 +141,10 @@ Without this, Render may pick Python 3.14 and the build fails on `pydantic-core`
 
 5. Build / start (Root Directory = `backend`):
 
-- Build: `python --version && pip install --upgrade pip && pip install -r requirements.txt`
+- Build: `python scripts/render_build.py`
 - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+
+   The build script **fails immediately** if Python is not 3.11, with instructions to set `PYTHON_VERSION`.
 
 6. After deploy, open `https://YOUR-API.onrender.com/api/health` — should return `{"ok":true,...}`.
 

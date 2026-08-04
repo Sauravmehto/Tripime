@@ -1,0 +1,11 @@
+# Required on Render for services created after 2026-02-11 (default is Python 3.14).
+# Without this, pydantic-core fails to build (maturin / read-only cargo cache).
+#
+# Also set in Render Dashboard → Environment:
+#   PYTHON_VERSION=3.11.9
+# Then: Manual Deploy → Clear build cache & deploy.
+#
+# Root Directory must be: backend
+# Build Command: python scripts/render_build.py
+# Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+PYTHON_VERSION=3.11.9
