@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Mail, Pencil, Phone, UserRound } from "lucide-react";
 import Swal from "sweetalert2";
-import { FlightCard } from "../components/FlightCard";
+import { FareSummaryCard } from "../components/flights/FareSummaryCard";
+import { FlightItineraryCard } from "../components/flights/FlightItineraryCard";
+import { FlightRouteBar } from "../components/flights/FlightRouteBar";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/ui/Button";
-import { Card, PriceDisplay } from "../components/ui/Card";
-import { PageHeader } from "../components/ui/PageHeader";
+import { Card } from "../components/ui/Card";
 import { Stepper } from "../components/ui/Stepper";
+import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
-import { formatDate, formatDuration, formatINR } from "../lib/format";
+import { formatDate, formatINR } from "../lib/format";
 
 export function ReviewPage() {
   const navigate = useNavigate();
@@ -26,6 +29,7 @@ export function ReviewPage() {
   const baseFare = selectedFlight.fare.baseFare * count;
   const taxes = selectedFlight.fare.taxes * count;
   const total = selectedFlight.fare.totalFare * count;
+  const backToResults = `/flights?origin=${search.origin}&destination=${search.destination}&date=${search.date}&passengers=${search.passengers}`;
 
   async function handleConfirmContinue() {
     if (!selectedFlight) return;
@@ -71,106 +75,101 @@ export function ReviewPage() {
 
   return (
     <Layout>
-      <Stepper current="review" />
-      <PageHeader
-        onBack={() => navigate("/booking/passengers")}
-        backLabel="Back to passengers"
-        title="Review booking"
-        subtitle="Confirm your trip details, then continue to seat selection. No booking is created yet."
-      />
+      <div className="pb-24 lg:pb-0">
+        <Stepper current="review" />
 
-      <div className="mb-6">
-        <FlightCard flight={selectedFlight} showSelect={false} />
-      </div>
+        <FlightRouteBar
+          flight={selectedFlight}
+          passengers={count}
+          changeFlightTo={backToResults}
+          className="mb-4"
+        />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-4">
-          <Card>
-            <h2 className="mb-3 font-semibold text-neutral-900">Trip summary</h2>
-            <ul className="space-y-2 text-sm text-neutral-700">
-              <li>
-                <span className="text-neutral-500">Airline:</span> {selectedFlight.airline.name}
-              </li>
-              <li>
-                <span className="text-neutral-500">Flight:</span> {selectedFlight.flightNumber}
-              </li>
-              <li>
-                <span className="text-neutral-500">Route:</span> {selectedFlight.origin.city} →{" "}
-                {selectedFlight.destination.city}
-              </li>
-              <li>
-                <span className="text-neutral-500">Travel date:</span>{" "}
-                {formatDate(selectedFlight.departureDate)}
-              </li>
-              <li>
-                <span className="text-neutral-500">Time:</span> {selectedFlight.departureTime} –{" "}
-                {selectedFlight.arrivalTime}
-              </li>
-              <li>
-                <span className="text-neutral-500">Duration:</span>{" "}
-                {formatDuration(selectedFlight.durationMinutes)}
-              </li>
-              <li>
-                <span className="text-neutral-500">Baggage:</span> Cabin {selectedFlight.baggage.cabin}{" "}
-                · Check-in {selectedFlight.baggage.checkIn}
-              </li>
-              <li>
-                <span className="text-neutral-500">Fare type:</span>{" "}
-                {selectedFlight.refundable ? "Refundable" : "Non-refundable"}
-              </li>
-            </ul>
-          </Card>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <div className="space-y-4">
+            <FlightItineraryCard flight={selectedFlight} />
 
-          <Card>
-            <h2 className="mb-3 font-semibold text-neutral-900">Passengers</h2>
-            <ul className="space-y-1 text-sm text-neutral-700">
-              {passengers.map((p, i) => (
-                <li key={i}>
-                  {p.title} {p.firstName} {p.lastName}
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-sm text-neutral-500">
-              Contact: {contact.email} · {contact.phone}
-            </p>
-          </Card>
+            <Card padded={false} className="p-4 sm:p-5">
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-600">
+                    <UserRound className="size-4" aria-hidden />
+                  </span>
+                  <div>
+                    <h2 className="text-sm font-bold text-neutral-900">Travellers</h2>
+                    <p className="text-xs text-neutral-500">
+                      {count} {count === 1 ? "adult" : "adults"} on this booking
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/booking/passengers")}
+                >
+                  <Pencil className="size-3.5" aria-hidden />
+                  Edit
+                </Button>
+              </div>
 
-          <Button
-            size="lg"
-            className="hidden w-full sm:w-auto lg:inline-flex"
-            onClick={() => void handleConfirmContinue()}
+              <ul className="divide-y divide-neutral-100 rounded-xl border border-neutral-200">
+                {passengers.map((passenger, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
+                  >
+                    <span className="font-medium text-neutral-900">
+                      {passenger.title} {passenger.firstName} {passenger.lastName}
+                    </span>
+                    <span className="text-xs text-neutral-500">
+                      {passenger.gender} · {passenger.dateOfBirth}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <p className="flex items-center gap-2 rounded-xl bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+                  <Mail className="size-3.5 text-neutral-400" aria-hidden />
+                  <span className="truncate">{contact.email}</span>
+                </p>
+                <p className="flex items-center gap-2 rounded-xl bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+                  <Phone className="size-3.5 text-neutral-400" aria-hidden />
+                  <span className="truncate">{contact.phone}</span>
+                </p>
+              </div>
+            </Card>
+          </div>
+
+          <FareSummaryCard
+            rows={[
+              {
+                label: "Base fare",
+                hint: `${count} traveller${count > 1 ? "s" : ""}`,
+                amount: baseFare,
+              },
+              { label: "Taxes and fees", amount: taxes },
+            ]}
+            total={total}
+            note="No booking is created until payment is completed."
           >
-            Confirm &amp; continue
-          </Button>
+            <Button
+              size="lg"
+              variant="coral"
+              className="hidden w-full lg:inline-flex"
+              onClick={() => void handleConfirmContinue()}
+            >
+              Confirm &amp; continue
+            </Button>
+          </FareSummaryCard>
         </div>
-
-        <Card className="h-fit lg:sticky lg:top-24">
-          <h2 className="mb-3 font-semibold text-neutral-900">Fare breakdown</h2>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between text-neutral-700">
-              <dt>Base fare × {count}</dt>
-              <dd>{formatINR(baseFare)}</dd>
-            </div>
-            <div className="flex justify-between text-neutral-700">
-              <dt>Taxes × {count}</dt>
-              <dd>{formatINR(taxes)}</dd>
-            </div>
-            <div className="flex justify-between border-t border-neutral-100 pt-2 text-base font-bold">
-              <dt>Total</dt>
-              <dd>
-                <PriceDisplay amount={formatINR(total)} className="text-lg" />
-              </dd>
-            </div>
-          </dl>
-          <Button
-            size="lg"
-            className="mt-5 w-full lg:hidden"
-            onClick={() => void handleConfirmContinue()}
-          >
-            Confirm &amp; continue
-          </Button>
-        </Card>
       </div>
+
+      <StickyActionBar
+        total={formatINR(total)}
+        ctaLabel="Confirm & continue"
+        onClick={() => void handleConfirmContinue()}
+      />
     </Layout>
   );
 }

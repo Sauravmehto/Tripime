@@ -52,6 +52,8 @@
 
   --color-accent: #fb923c;
   --color-brand-coral: #e14d55;
+  --color-brand-coral-dark: #c43a43;
+  --color-brand-coral-soft: #fdecec;
 
   --shadow-soft: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.04);
   --shadow-medium: 0 4px 8px -2px rgb(15 23 42 / 0.06), 0 2px 4px -2px rgb(15 23 42 / 0.04);
@@ -78,4 +80,77 @@ h3,
 h4 {
   font-family: var(--font-sans);
   letter-spacing: -0.02em;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes tp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tp-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tp-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes tp-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: tp-fade-up 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-panel-in {
+  animation: tp-panel-in 0.2s ease-out both;
+}
+
+.animate-sheet-up {
+  animation: tp-sheet-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-overlay-in {
+  animation: tp-overlay-in 0.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-panel-in,
+  .animate-sheet-up,
+  .animate-overlay-in {
+    animation: none;
+  }
 }

@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FareSummaryCard } from "../components/flights/FareSummaryCard";
+import { FlightRouteBar } from "../components/flights/FlightRouteBar";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/ui/Button";
-import { Card, PriceDisplay } from "../components/ui/Card";
-import { PageHeader } from "../components/ui/PageHeader";
+import { Card } from "../components/ui/Card";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
-import { formatDate, formatINR } from "../lib/format";
+import { formatINR } from "../lib/format";
 import {
   generateSeatMap,
   seatLabel,
@@ -101,15 +102,21 @@ export function SeatsPage() {
     <Layout>
       <div className="pb-24 lg:pb-0">
         <Stepper current="seats" />
-        <PageHeader
-          onBack={() => navigate("/booking/review")}
-          backLabel="Back to review"
-          title="Select seats"
-          subtitle={`${selectedCount} of ${required} seat${required > 1 ? "s" : ""} selected`}
+
+        <FlightRouteBar
+          flight={selectedFlight}
+          passengers={passengers.length}
+          className="mb-4"
         />
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <Card padded={false} className="p-4 sm:p-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <h1 className="text-lg font-bold text-neutral-900">Select seats</h1>
+              <p className="text-xs font-semibold text-neutral-500">
+                {selectedCount} of {required} seat{required > 1 ? "s" : ""} selected
+              </p>
+            </div>
             <div className="mb-4 flex flex-wrap gap-2 text-xs text-neutral-600">
               <Legend swatch="bg-white border" label="Available" />
               <Legend swatch="bg-primary-600" label="Selected" />
@@ -178,70 +185,50 @@ export function SeatsPage() {
             </div>
           </Card>
 
-          <Card className="h-fit lg:sticky lg:top-24">
-            <h2 className="font-semibold text-neutral-900">Booking summary</h2>
-            <dl className="mt-3 space-y-2 text-sm text-neutral-700">
-              <div>
-                <dt className="text-xs uppercase text-neutral-500">Route</dt>
-                <dd>
-                  {selectedFlight.origin.code} → {selectedFlight.destination.code}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase text-neutral-500">Flight</dt>
-                <dd>
-                  {selectedFlight.airline.name} · {selectedFlight.flightNumber}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase text-neutral-500">Travel date</dt>
-                <dd>{formatDate(selectedFlight.departureDate)}</dd>
-              </div>
-            </dl>
-
-            <div className="mt-4 border-t border-neutral-100 pt-4">
-              <p className="mb-2 text-xs font-semibold uppercase text-neutral-500">Passengers</p>
+          <div className="space-y-4 lg:sticky lg:top-20">
+            <Card padded={false} className="p-4">
+              <h2 className="mb-3 text-sm font-bold text-neutral-900">Seat assignment</h2>
               <ul className="space-y-2 text-sm">
                 {passengers.map((p, i) => {
                   const seat = selectedSeats.find((s) => s.passengerIndex === i);
                   return (
-                    <li key={i} className="flex justify-between gap-2">
-                      <span>
+                    <li
+                      key={i}
+                      className="flex items-center justify-between gap-2 rounded-xl bg-neutral-50 px-3 py-2"
+                    >
+                      <span className="truncate text-neutral-700">
                         {p.firstName} {p.lastName}
                       </span>
-                      <span className="font-mono text-primary-700">{seat?.seatNumber ?? "—"}</span>
+                      <span className="shrink-0 font-mono font-semibold text-primary-700">
+                        {seat?.seatNumber ?? "—"}
+                      </span>
                     </li>
                   );
                 })}
               </ul>
-            </div>
+            </Card>
 
-            <dl className="mt-4 space-y-2 border-t border-neutral-100 pt-4 text-sm">
-              <div className="flex justify-between">
-                <dt>Flight fare</dt>
-                <dd>{formatINR(flightFare)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Seat selection</dt>
-                <dd>{formatINR(seatCharges)}</dd>
-              </div>
-              <div className="flex justify-between border-t border-neutral-100 pt-2 font-bold">
-                <dt>Total</dt>
-                <dd>
-                  <PriceDisplay amount={formatINR(total)} />
-                </dd>
-              </div>
-            </dl>
-
-            <Button
-              className="mt-5 hidden w-full lg:inline-flex"
-              size="lg"
-              disabled={!complete}
-              onClick={() => navigate("/booking/payment")}
+            <FareSummaryCard
+              sticky={false}
+              rows={[
+                { label: "Flight fare", amount: flightFare },
+                { label: "Seat selection", amount: seatCharges },
+              ]}
+              total={total}
+              totalLabel="Total payable"
+              note="Seat charges are added to your final payment."
             >
-              Continue to payment
-            </Button>
-          </Card>
+              <Button
+                className="hidden w-full lg:inline-flex"
+                size="lg"
+                variant="coral"
+                disabled={!complete}
+                onClick={() => navigate("/booking/payment")}
+              >
+                Continue to payment
+              </Button>
+            </FareSummaryCard>
+          </div>
         </div>
       </div>
 

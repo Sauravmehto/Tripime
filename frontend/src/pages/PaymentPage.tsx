@@ -3,15 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { createBooking } from "../api/bookingApi";
 import { getErrorMessage } from "../api/apiClient";
 import { processMockPayment } from "../api/paymentApi";
+import { FareSummaryCard } from "../components/flights/FareSummaryCard";
+import { FlightRouteBar } from "../components/flights/FlightRouteBar";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/ui/Button";
-import { Card, PriceDisplay } from "../components/ui/Card";
+import { Card } from "../components/ui/Card";
 import { Field, Input } from "../components/ui/Input";
-import { PageHeader } from "../components/ui/PageHeader";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
-import { formatDate, formatINR } from "../lib/format";
+import { formatINR } from "../lib/format";
 import type { PaymentMethod } from "../types";
 
 type Tab = PaymentMethod;
@@ -137,15 +138,21 @@ export function PaymentPage() {
     <Layout>
       <div className="pb-24 lg:pb-0">
         <Stepper current="payment" />
-        <PageHeader
-          onBack={() => navigate("/booking/seats")}
-          backLabel="Back to seats"
-          title="Payment"
-          subtitle="Mock checkout — no real money will be charged."
+
+        <FlightRouteBar
+          flight={selectedFlight}
+          passengers={passengers.length}
+          className="mb-4"
         />
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <Card>
+            <div className="mb-4">
+              <h1 className="text-lg font-bold text-neutral-900">Payment options</h1>
+              <p className="text-xs text-neutral-500">
+                Mock checkout — no real money will be charged.
+              </p>
+            </div>
             <div
               role="tablist"
               aria-label="Payment method"
@@ -281,54 +288,37 @@ export function PaymentPage() {
 
             {error && <p className="mt-4 text-sm text-danger-600">{error}</p>}
 
+          </Card>
+
+          <FareSummaryCard
+            title="Payment summary"
+            rows={[
+              {
+                label: "Base fare",
+                hint: `${passengers.length} traveller${passengers.length > 1 ? "s" : ""}`,
+                amount: baseFare,
+              },
+              { label: "Taxes and fees", amount: taxes },
+              {
+                label: "Seat charges",
+                hint: selectedSeats.map((seat) => seat.seatNumber).join(", ") || undefined,
+                amount: seatCharges,
+              },
+            ]}
+            total={totalPayable}
+            totalLabel="Total payable"
+            note="Mock payment gateway — your card details are never stored."
+          >
             <Button
-              className="mt-6 hidden w-full lg:inline-flex"
+              className="hidden w-full lg:inline-flex"
               size="lg"
+              variant="coral"
               disabled={submitting}
               onClick={() => void handlePay()}
             >
               {submitting ? "Processing payment…" : `Pay ${formatINR(totalPayable)}`}
             </Button>
-          </Card>
-
-          <Card className="h-fit lg:sticky lg:top-24">
-            <h2 className="font-semibold text-neutral-900">Payment summary</h2>
-            <p className="mt-2 text-sm text-neutral-600">
-              {selectedFlight.origin.code} → {selectedFlight.destination.code} ·{" "}
-              {formatDate(selectedFlight.departureDate)}
-            </p>
-            <dl className="mt-4 space-y-2 text-sm text-neutral-700">
-              <div className="flex justify-between">
-                <dt>Base fare</dt>
-                <dd>{formatINR(baseFare)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Taxes</dt>
-                <dd>{formatINR(taxes)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Flight fare</dt>
-                <dd>{formatINR(flightFare)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Seat charges</dt>
-                <dd>{formatINR(seatCharges)}</dd>
-              </div>
-              <div className="flex justify-between border-t border-neutral-100 pt-2 text-base font-bold">
-                <dt>Total payable</dt>
-                <dd>
-                  <PriceDisplay amount={formatINR(totalPayable)} />
-                </dd>
-              </div>
-            </dl>
-            <ul className="mt-4 space-y-1 border-t border-neutral-100 pt-3 text-xs text-neutral-500">
-              {selectedSeats.map((s) => (
-                <li key={s.seatNumber}>
-                  Seat {s.seatNumber} · {formatINR(s.price)}
-                </li>
-              ))}
-            </ul>
-          </Card>
+          </FareSummaryCard>
         </div>
       </div>
 
