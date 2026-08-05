@@ -6,9 +6,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from app import config
 from app.models.admin import AdminLoginRequest, AdminLoginResponse, AdminStats
 from app.models.booking import Booking
+from app.models.package import Package, PackageCreate, PackageUpdate
 from app.services.admin_auth import create_admin_token, require_admin
 from app.services.booking_service import get_booking_service
 from app.services.email_service import send_booking_confirmation_email
+from app.services.package_service import get_package_service
 
 router = APIRouter()
 
@@ -69,3 +71,31 @@ def get_stats() -> AdminStats:
         bookingsToday=bookings_today,
         totalRevenue=total_revenue,
     )
+
+
+@router.get("/packages", response_model=list[Package], dependencies=[Depends(require_admin)])
+def admin_list_packages() -> list[Package]:
+    return get_package_service().list_packages(active_only=False)
+
+
+@router.post("/packages", response_model=Package, dependencies=[Depends(require_admin)])
+def admin_create_package(payload: PackageCreate) -> Package:
+    return get_package_service().create_package(payload)
+
+
+@router.put(
+    "/packages/{package_id}",
+    response_model=Package,
+    dependencies=[Depends(require_admin)],
+)
+def admin_update_package(package_id: str, payload: PackageUpdate) -> Package:
+    return get_package_service().update_package(package_id, payload)
+
+
+@router.delete(
+    "/packages/{package_id}",
+    status_code=204,
+    dependencies=[Depends(require_admin)],
+)
+def admin_delete_package(package_id: str) -> None:
+    get_package_service().delete_package(package_id)
