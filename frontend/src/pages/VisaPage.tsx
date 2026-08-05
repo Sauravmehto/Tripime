@@ -3,8 +3,9 @@ import { ProductHero } from "../components/marketing/ProductHero";
 import { SectionHeading } from "../components/marketing/SectionHeading";
 import { FeatureGrid, type FeatureItem } from "../components/marketing/FeatureGrid";
 import { FaqList } from "../components/marketing/FaqList";
+import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
-import { Card, PageContainer } from "../components/ui/Card";
+import { Card } from "../components/ui/Card";
 import { showComingSoon } from "../lib/comingSoon";
 
 const FEATURES: FeatureItem[] = [
@@ -122,7 +123,7 @@ export function VisaPage() {
         subtitle="Tourist, business and transit visas — expert assistance from application to approval."
         image="https://images.pexels.com/photos/2402926/pexels-photo-2402926.jpeg?auto=compress&cs=tinysrgb&w=1920"
       >
-        <div className="max-w-md rounded-2xl bg-white p-5 shadow-elevated sm:p-6">
+        <div className="max-w-md rounded-3xl bg-white/95 p-5 shadow-elevated ring-1 ring-neutral-900/5 backdrop-blur-sm sm:p-6">
           <p className="text-sm text-neutral-600">
             Tell us where you&apos;re headed and our visa experts will get in touch.
           </p>
@@ -136,31 +137,34 @@ export function VisaPage() {
         </div>
       </ProductHero>
 
-      <PageContainer className="py-12">
+      <Section>
         <SectionHeading
           title="Why apply with Tripime?"
           subtitle="Hassle-free visa assistance for your next international trip."
         />
         <FeatureGrid items={FEATURES} />
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-4">
+      <Section tone="white">
         <SectionHeading title="Popular destinations" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {DESTINATIONS.map((d) => (
-            <Card
+            <button
               key={d.country}
-              className="cursor-pointer transition hover:shadow-medium"
+              type="button"
+              className="group w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               onClick={() => void showComingSoon("Visa")}
             >
-              <p className="font-semibold text-neutral-900">{d.country}</p>
-              <p className="mt-1 text-sm text-neutral-500">{d.type}</p>
-            </Card>
+              <Card className="h-full transition group-hover:border-primary-200 group-hover:shadow-medium">
+                <p className="font-semibold text-neutral-900">{d.country}</p>
+                <p className="mt-1 text-sm text-neutral-500">{d.type}</p>
+              </Card>
+            </button>
           ))}
         </div>
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-12">
+      <Section>
         <SectionHeading title="How it works" subtitle="Get your visa in 4 simple steps." />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s) => (
@@ -171,12 +175,15 @@ export function VisaPage() {
             </Card>
           ))}
         </div>
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-12 pb-16">
-        <SectionHeading title="Frequently asked questions" subtitle="Quick answers to common visa queries." />
+      <Section tone="white">
+        <SectionHeading
+          title="Frequently asked questions"
+          subtitle="Quick answers to common visa queries."
+        />
         <FaqList items={FAQS} />
-      </PageContainer>
+      </Section>
     </Layout>
   );
 }

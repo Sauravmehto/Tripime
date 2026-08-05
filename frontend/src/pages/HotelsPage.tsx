@@ -5,8 +5,9 @@ import { ProductHero } from "../components/marketing/ProductHero";
 import { SectionHeading } from "../components/marketing/SectionHeading";
 import { OfferCards } from "../components/marketing/OfferCards";
 import { FaqList } from "../components/marketing/FaqList";
+import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
-import { Card, PageContainer } from "../components/ui/Card";
+import { Card } from "../components/ui/Card";
 import { Field, Input, Select } from "../components/ui/Input";
 import { showComingSoon } from "../lib/comingSoon";
 
@@ -90,52 +91,54 @@ export function HotelsPage() {
       >
         <form
           onSubmit={handleSubmit}
-          className="grid gap-4 rounded-2xl bg-white p-4 shadow-elevated sm:p-5 lg:grid-cols-[1.3fr_1fr_1fr_1fr_auto]"
+          className="rounded-3xl bg-white/95 p-4 shadow-elevated ring-1 ring-neutral-900/5 backdrop-blur-sm sm:p-5"
         >
-          <Field label="City">
-            <Input value={city} onChange={(e) => setCity(e.target.value)} required />
-          </Field>
-          <Field label="Check-in">
-            <Input
-              type="date"
-              min="2026-08-04"
-              value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Check-out">
-            <Input
-              type="date"
-              min={checkIn}
-              value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-              required
-            />
-          </Field>
-          <Field label="Guests">
-            <Select value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <option key={n} value={n}>
-                  {n} Guest{n > 1 ? "s" : ""}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <div className="flex items-end">
-            <Button type="submit" size="lg" className="w-full lg:min-w-[140px]">
-              Search hotels
-            </Button>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_auto] lg:items-end">
+            <Field label="City">
+              <Input value={city} onChange={(e) => setCity(e.target.value)} required />
+            </Field>
+            <Field label="Check-in">
+              <Input
+                type="date"
+                min="2026-08-04"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Check-out">
+              <Input
+                type="date"
+                min={checkIn}
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Guests">
+              <Select value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <option key={n} value={n}>
+                    {n} Guest{n > 1 ? "s" : ""}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Button type="submit" size="lg" className="h-11 w-full sm:h-12 lg:min-w-[140px]">
+                Search hotels
+              </Button>
+            </div>
           </div>
         </form>
       </ProductHero>
 
-      <PageContainer className="py-12">
+      <Section>
         <SectionHeading title="More offers" subtitle="Save more on your next stay." />
         <OfferCards items={OFFERS} />
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-4">
+      <Section tone="white">
         <SectionHeading title="Popular destinations" />
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {DESTINATIONS.map((d) => (
@@ -145,9 +148,9 @@ export function HotelsPage() {
             </Card>
           ))}
         </div>
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-12">
+      <Section>
         <SectionHeading title="Top hotels with great deals" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TOP_HOTELS.map((h) => (
@@ -157,12 +160,12 @@ export function HotelsPage() {
             </Card>
           ))}
         </div>
-      </PageContainer>
+      </Section>
 
-      <PageContainer className="py-12 pb-16">
+      <Section tone="white">
         <SectionHeading title="FAQ: Book hotels on Tripime" />
         <FaqList items={FAQS} />
-      </PageContainer>
+      </Section>
     </Layout>
   );
 }

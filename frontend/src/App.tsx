@@ -10,10 +10,12 @@ import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { HotelsPage } from "./pages/HotelsPage";
 import { BusesPage } from "./pages/BusesPage";
 import { PackagesPage } from "./pages/PackagesPage";
+import { PackageDetailPage } from "./pages/PackageDetailPage";
 import { VisaPage } from "./pages/VisaPage";
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminBookingRequestsPage } from "./pages/admin/AdminBookingRequestsPage";
+import { AdminPackagesPage } from "./pages/admin/AdminPackagesPage";
 import { AdminProtectedRoute } from "./components/admin/AdminProtectedRoute";
 
 export default function App() {
@@ -25,6 +27,7 @@ export default function App() {
           <Route path="/hotels" element={<HotelsPage />} />
           <Route path="/buses" element={<BusesPage />} />
           <Route path="/packages" element={<PackagesPage />} />
+          <Route path="/packages/:packageId" element={<PackageDetailPage />} />
           <Route path="/visa" element={<VisaPage />} />
           <Route path="/flights" element={<ResultsPage />} />
           <Route path="/booking/passengers" element={<PassengersPage />} />
@@ -46,6 +49,14 @@ export default function App() {
             element={
               <AdminProtectedRoute>
                 <AdminBookingRequestsPage />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/packages"
+            element={
+              <AdminProtectedRoute>
+                <AdminPackagesPage />
               </AdminProtectedRoute>
             }
           />

@@ -140,3 +140,35 @@ export interface AdminStats {
   bookingsToday: number;
   totalRevenue: number;
 }
+
+export type PackageCategory =
+  | "domestic"
+  | "international"
+  | "offer"
+  | "upcoming_event";
+
+export interface TravelPackage {
+  id: string;
+  title: string;
+  tagline: string;
+  destination: string;
+  category: PackageCategory;
+  duration: string;
+  stays: string;
+  guests: string;
+  highlights: string[];
+  itinerary: string[];
+  price: number;
+  priceNote: string;
+  negotiable: boolean;
+  imageUrl: string;
+  pdfUrl: string;
+  eventDate: string | null;
+  featured: boolean;
+  sortOrder: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PackageInput = Omit<TravelPackage, "id" | "createdAt" | "updatedAt">;

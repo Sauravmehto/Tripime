@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { ClipboardList, LayoutDashboard, LogOut, Package } from "lucide-react";
 import { Logo } from "../Logo";
 import { clearAdminToken } from "../../lib/adminAuth";
 
 const NAV_LINKS = [
-  { to: "/admin/dashboard", label: "Dashboard" },
-  { to: "/admin/bookings", label: "Booking requests" },
+  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/bookings", label: "Booking requests", icon: ClipboardList },
+  { to: "/admin/packages", label: "Packages", icon: Package },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
@@ -29,13 +31,14 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `block rounded-lg px-3 py-2.5 text-sm font-semibold ${
+                `flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold ${
                   isActive
                     ? "bg-primary-50 text-primary-700"
                     : "text-neutral-600 hover:bg-neutral-50"
                 }`
               }
             >
+              <link.icon className="size-4 shrink-0" aria-hidden />
               {link.label}
             </NavLink>
           ))}
@@ -44,25 +47,47 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-danger-600 hover:bg-danger-50"
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-danger-600 hover:bg-danger-50"
           >
+            <LogOut className="size-4 shrink-0" aria-hidden />
             Logout
           </button>
         </div>
       </aside>
 
-      <div className="flex-1">
-        <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 sm:hidden">
-          <Logo className="h-7" />
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-sm font-semibold text-danger-600"
-          >
-            Logout
-          </button>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="border-b border-neutral-200 bg-white sm:hidden">
+          <div className="flex items-center justify-between px-4 py-3">
+            <Logo className="h-7" />
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-danger-600"
+            >
+              <LogOut className="size-4" aria-hidden />
+              Logout
+            </button>
+          </div>
+          <nav className="flex gap-1 overflow-x-auto border-t border-neutral-100 px-2 py-2">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  `inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold ${
+                    isActive
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-neutral-600 hover:bg-neutral-50"
+                  }`
+                }
+              >
+                <link.icon className="size-3.5" aria-hidden />
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
         </header>
-        <main className="p-4 sm:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

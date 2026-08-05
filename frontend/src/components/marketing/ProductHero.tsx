@@ -1,47 +1,99 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 interface ProductHeroProps {
   eyebrow: string;
   title: ReactNode;
   subtitle?: string;
-  image: string;
+  /** Single static image (used when `images` is omitted). */
+  image?: string;
+  /** Optional rotating gallery; falls back to `image` when empty. */
+  images?: string[];
   children?: ReactNode;
+  trustItems?: string[];
 }
 
-export function ProductHero({ eyebrow, title, subtitle, image, children }: ProductHeroProps) {
+export function ProductHero({
+  eyebrow,
+  title,
+  subtitle,
+  image,
+  images,
+  children,
+  trustItems,
+}: ProductHeroProps) {
+  const gallery = images && images.length > 0 ? images : image ? [image] : [];
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (gallery.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % gallery.length);
+    }, 7000);
+    return () => window.clearInterval(id);
+  }, [gallery.length]);
+
   return (
-    <section className="relative z-10 flex min-h-[420px] flex-col overflow-hidden pb-16 pt-10 sm:min-h-[460px] sm:pb-20 sm:pt-14">
+    <section className="relative isolate overflow-hidden">
+      {gallery.map((src, index) => (
+        <div
+          key={src}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out ${
+            activeIndex === index ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ backgroundImage: `url(${src})` }}
+          aria-hidden
+        />
+      ))}
+
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${image})` }}
+        className="absolute inset-0 bg-gradient-to-br from-[#071d4d]/92 via-[#0d2f70]/72 to-[#1c52b8]/35"
         aria-hidden
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a2a6b]/85 via-[#123a82]/70 to-[#1c52b8]/55" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0a2a6b]/90 via-[#1c52b8]/50 to-transparent" />
       <div
-        className="absolute inset-0"
-        style={{
-          clipPath: "polygon(0 0, 72% 0, 52% 100%, 0 100%)",
-          background: "linear-gradient(135deg, rgba(10,42,107,0.9), rgba(28,82,184,0.78))",
-        }}
+        className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-neutral-50 to-transparent"
+        aria-hidden
       />
-      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary-400/30 blur-3xl" />
-      <div className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-secondary-400/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8">
-        <div className="mt-4 max-w-2xl sm:mt-8">
-          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-white/90">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-14 pt-24 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8 lg:pb-24 lg:pt-32">
+        <div className="max-w-2xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white/90 ring-1 ring-inset ring-white/20 backdrop-blur-sm">
             {eyebrow}
-          </p>
-          <h1 className="text-3xl font-bold leading-tight tracking-tight text-white drop-shadow-md sm:text-4xl lg:text-5xl">
+          </span>
+          <h1 className="mt-5 text-[2rem] font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
             {title}
           </h1>
-          {subtitle && <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">{subtitle}</p>}
+          {subtitle && (
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-white/85 sm:text-lg">
+              {subtitle}
+            </p>
+          )}
+
+          {trustItems && trustItems.length > 0 && (
+            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+              {trustItems.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-1.5 text-sm font-medium text-white/80"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-4 text-secondary-400"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    aria-hidden
+                  >
+                    <path d="m5 13 4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {children && (
-          <div className="relative z-20 mt-8 lg:mt-10">{children}</div>
-        )}
+        {children && <div className="relative z-20 mt-10 lg:mt-12">{children}</div>}
       </div>
     </section>
   );

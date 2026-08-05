@@ -1,6 +1,12 @@
 import { apiClient } from "./apiClient";
 import { getAdminToken } from "../lib/adminAuth";
-import type { AdminLoginResponse, AdminStats, Booking } from "../types";
+import type {
+  AdminLoginResponse,
+  AdminStats,
+  Booking,
+  PackageInput,
+  TravelPackage,
+} from "../types";
 
 function authHeaders() {
   const token = getAdminToken();
@@ -46,4 +52,36 @@ export async function confirmAdminBooking(bookingId: string): Promise<Booking> {
     { headers: authHeaders() },
   );
   return data;
+}
+
+export async function listAdminPackages(): Promise<TravelPackage[]> {
+  const { data } = await apiClient.get<TravelPackage[]>("/api/admin/packages", {
+    headers: authHeaders(),
+  });
+  return data;
+}
+
+export async function createAdminPackage(payload: PackageInput): Promise<TravelPackage> {
+  const { data } = await apiClient.post<TravelPackage>("/api/admin/packages", payload, {
+    headers: authHeaders(),
+  });
+  return data;
+}
+
+export async function updateAdminPackage(
+  packageId: string,
+  payload: PackageInput,
+): Promise<TravelPackage> {
+  const { data } = await apiClient.put<TravelPackage>(
+    `/api/admin/packages/${packageId}`,
+    payload,
+    { headers: authHeaders() },
+  );
+  return data;
+}
+
+export async function deleteAdminPackage(packageId: string): Promise<void> {
+  await apiClient.delete(`/api/admin/packages/${packageId}`, {
+    headers: authHeaders(),
+  });
 }
