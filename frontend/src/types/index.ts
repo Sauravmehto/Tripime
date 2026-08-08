@@ -172,3 +172,22 @@ export interface TravelPackage {
 }
 
 export type PackageInput = Omit<TravelPackage, "id" | "createdAt" | "updatedAt">;
+
+export type EnquiryStatus = "NEW" | "CONTACTED" | "CLOSED";
+
+export interface EnquiryPayload {
+  packageId?: string;
+  packageTitle?: string;
+  name: string;
+  email: string;
+  phone: string;
+  travelMonth?: string;
+  travelers?: number;
+  message?: string;
+}
+
+export interface Enquiry extends EnquiryPayload {
+  id: string;
+  status: EnquiryStatus;
+  createdAt: string;
+}

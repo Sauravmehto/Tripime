@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -14,6 +15,46 @@ import type {
   SearchParams,
   SelectedSeat,
 } from "../types";
+
+const STORAGE_KEY = "tripime_booking_v1";
+
+interface PersistedBookingState {
+  search: SearchParams | null;
+  selectedFlight: Flight | null;
+  passengers: PassengerForm[];
+  contact: ContactForm;
+  selectedSeats: SelectedSeat[];
+  payment: PaymentMeta | null;
+}
+
+/**
+ * Booking-in-progress is kept in sessionStorage (not localStorage) so a page
+ * refresh mid-checkout doesn't lose progress, but it clears when the tab closes.
+ */
+function loadPersisted(): PersistedBookingState | null {
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedBookingState) : null;
+  } catch {
+    return null;
+  }
+}
+
+function persist(state: PersistedBookingState) {
+  try {
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // sessionStorage unavailable (private mode, quota, etc.) — booking still works, just not persisted.
+  }
+}
+
+function clearPersisted() {
+  try {
+    window.sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 interface BookingState {
   search: SearchParams | null;
@@ -37,12 +78,17 @@ const defaultContact: ContactForm = { email: "", phone: "" };
 const BookingContext = createContext<BookingState | null>(null);
 
 export function BookingProvider({ children }: { children: ReactNode }) {
-  const [search, setSearch] = useState<SearchParams | null>(null);
-  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
-  const [passengers, setPassengers] = useState<PassengerForm[]>([]);
-  const [contact, setContact] = useState<ContactForm>(defaultContact);
-  const [selectedSeats, setSelectedSeatsState] = useState<SelectedSeat[]>([]);
-  const [payment, setPayment] = useState<PaymentMeta | null>(null);
+  const [restored] = useState(() => loadPersisted());
+  const [search, setSearch] = useState<SearchParams | null>(restored?.search ?? null);
+  const [selectedFlight, setSelectedFlight] = useState<Flight | null>(
+    restored?.selectedFlight ?? null,
+  );
+  const [passengers, setPassengers] = useState<PassengerForm[]>(restored?.passengers ?? []);
+  const [contact, setContact] = useState<ContactForm>(restored?.contact ?? defaultContact);
+  const [selectedSeats, setSelectedSeatsState] = useState<SelectedSeat[]>(
+    restored?.selectedSeats ?? [],
+  );
+  const [payment, setPayment] = useState<PaymentMeta | null>(restored?.payment ?? null);
 
   const setSelectedSeats = useCallback((seats: SelectedSeat[]) => {
     setSelectedSeatsState(seats);
@@ -60,7 +106,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setContact(defaultContact);
     setSelectedSeatsState([]);
     setPayment(null);
+    clearPersisted();
   }, []);
+
+  useEffect(() => {
+    persist({ search, selectedFlight, passengers, contact, selectedSeats, payment });
+  }, [search, selectedFlight, passengers, contact, selectedSeats, payment]);
 
   const value = useMemo(
     () => ({

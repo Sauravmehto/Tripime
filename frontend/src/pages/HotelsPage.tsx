@@ -9,6 +9,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Field, Input, Select } from "../components/ui/Input";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { showComingSoon } from "../lib/comingSoon";
 
 const DESTINATIONS = [
@@ -30,18 +31,16 @@ const TOP_HOTELS = [
 
 const OFFERS = [
   {
-    title: "Last minute deals",
-    body: "Up to 40% off on hotels for check-ins today & tomorrow.",
+    title: "Last-minute stays",
+    body: "Ask our team about check-in deals for today and tomorrow.",
   },
   {
-    title: "Domestic hotel offer",
-    body: "Get up to 30% off on hotels.",
-    code: "TRIPHOTEL",
+    title: "Domestic hotels",
+    body: "Tell us your city and dates — we'll shortlist the best-value options.",
   },
   {
-    title: "International hotel offer",
-    body: "Get up to ₹4,000 off on international hotels.",
-    code: "TRIPINTL",
+    title: "International hotels",
+    body: "Planning a trip abroad? We'll compare rates across trusted partners for you.",
   },
 ];
 
@@ -67,6 +66,10 @@ const FAQS = [
 ];
 
 export function HotelsPage() {
+  usePageTitle(
+    "Hotels — launching soon",
+    "Hotel booking on Tripime is launching soon. Call or WhatsApp our travel experts to book stays today.",
+  );
   const [city, setCity] = useState("Goa");
   const [checkIn, setCheckIn] = useState("2026-08-10");
   const [checkOut, setCheckOut] = useState("2026-08-12");
@@ -80,13 +83,13 @@ export function HotelsPage() {
   return (
     <Layout bare>
       <ProductHero
-        eyebrow="Save max on hotels"
+        eyebrow="Hotels · Launching soon"
         title={
           <>
             Find your <span className="text-accent">perfect stay</span>
           </>
         }
-        subtitle="5-star hotels from ₹2,999 · Flat 25% off on your first booking"
+        subtitle="Tell us your destination and dates — our travel experts will get you the best hotel deal by call or WhatsApp."
         image="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg?auto=compress&cs=tinysrgb&w=1920"
       >
         <form
@@ -139,19 +142,25 @@ export function HotelsPage() {
       </Section>
 
       <Section tone="white">
-        <SectionHeading title="Popular destinations" />
+        <SectionHeading
+          title="Popular destinations"
+          subtitle="Illustrative catalogue sizes — online hotel booking is launching soon."
+        />
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {DESTINATIONS.map((d) => (
             <Card key={d.name} className="text-center">
               <p className="font-semibold text-neutral-900">{d.name}</p>
-              <p className="mt-1 text-xs text-neutral-500">{d.properties}</p>
+              <p className="mt-1 text-xs text-neutral-500">{d.properties} (illus.)</p>
             </Card>
           ))}
         </div>
       </Section>
 
       <Section>
-        <SectionHeading title="Top hotels with great deals" />
+        <SectionHeading
+          title="Top hotels with great deals"
+          subtitle="Sample properties for inspiration — not live inventory yet."
+        />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TOP_HOTELS.map((h) => (
             <Card key={h.name}>

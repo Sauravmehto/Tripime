@@ -4,6 +4,8 @@ import type {
   AdminLoginResponse,
   AdminStats,
   Booking,
+  Enquiry,
+  EnquiryStatus,
   PackageInput,
   TravelPackage,
 } from "../types";
@@ -26,13 +28,6 @@ export async function adminLogin(
 
 export async function listAdminBookings(): Promise<Booking[]> {
   const { data } = await apiClient.get<Booking[]>("/api/admin/bookings", {
-    headers: authHeaders(),
-  });
-  return data;
-}
-
-export async function getAdminBooking(bookingId: string): Promise<Booking> {
-  const { data } = await apiClient.get<Booking>(`/api/admin/bookings/${bookingId}`, {
     headers: authHeaders(),
   });
   return data;
@@ -84,4 +79,23 @@ export async function deleteAdminPackage(packageId: string): Promise<void> {
   await apiClient.delete(`/api/admin/packages/${packageId}`, {
     headers: authHeaders(),
   });
+}
+
+export async function listAdminEnquiries(): Promise<Enquiry[]> {
+  const { data } = await apiClient.get<Enquiry[]>("/api/admin/enquiries", {
+    headers: authHeaders(),
+  });
+  return data;
+}
+
+export async function updateAdminEnquiryStatus(
+  enquiryId: string,
+  status: EnquiryStatus,
+): Promise<Enquiry> {
+  const { data } = await apiClient.post<Enquiry>(
+    `/api/admin/enquiries/${enquiryId}/status`,
+    { status },
+    { headers: authHeaders() },
+  );
+  return data;
 }

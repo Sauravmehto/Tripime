@@ -11,12 +11,14 @@ import { Field, Input, Select } from "../components/ui/Input";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { emptyPassenger, formatINR } from "../lib/format";
 import type { PassengerForm } from "../types";
 
 type FieldErrors = Record<string, string>;
 
 export function PassengersPage() {
+  usePageTitle("Traveller details", "Enter traveller and contact details for your Tripime flight booking.");
   const navigate = useNavigate();
   const { search, selectedFlight, setPassengers, setContact, contact } = useBooking();
   const count = search?.passengers ?? 1;
@@ -75,7 +77,11 @@ export function PassengersPage() {
   if (!selectedFlight) return null;
 
   function fieldError(key: string) {
-    return errors[key] ? <p className="mt-1 text-xs text-danger-600">{errors[key]}</p> : null;
+    return errors[key] ? (
+      <p role="alert" aria-live="assertive" className="mt-1 text-xs text-danger-600">
+        {errors[key]}
+      </p>
+    ) : null;
   }
 
   function inputErrorClass(key: string) {
@@ -127,9 +133,20 @@ export function PassengersPage() {
                         });
                       }}
                       className={inputErrorClass("email")}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? "err-email" : undefined}
                       required
                     />
-                    {fieldError("email")}
+                    {errors.email ? (
+                      <p
+                        id="err-email"
+                        role="alert"
+                        aria-live="assertive"
+                        className="mt-1 text-xs text-danger-600"
+                      >
+                        {errors.email}
+                      </p>
+                    ) : null}
                   </Field>
                   <Field label="Mobile number">
                     <Input
@@ -145,9 +162,20 @@ export function PassengersPage() {
                         });
                       }}
                       className={inputErrorClass("phone")}
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? "err-phone" : undefined}
                       required
                     />
-                    {fieldError("phone")}
+                    {errors.phone ? (
+                      <p
+                        id="err-phone"
+                        role="alert"
+                        aria-live="assertive"
+                        className="mt-1 text-xs text-danger-600"
+                      >
+                        {errors.phone}
+                      </p>
+                    ) : null}
                   </Field>
                 </div>
                 <p className="mt-3 flex items-center gap-1.5 text-xs text-neutral-500">

@@ -5,7 +5,7 @@ const STEPS = [
   { id: "payment", label: "Payment" },
 ] as const;
 
-export type BookingStep = (typeof STEPS)[number]["id"];
+type BookingStep = (typeof STEPS)[number]["id"];
 
 interface StepperProps {
   current: BookingStep;

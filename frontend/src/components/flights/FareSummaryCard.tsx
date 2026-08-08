@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ReceiptText, ShieldCheck } from "lucide-react";
 import { formatINR } from "../../lib/format";
 
-export interface FareRow {
+interface FareRow {
   label: string;
   amount: number;
   hint?: string;

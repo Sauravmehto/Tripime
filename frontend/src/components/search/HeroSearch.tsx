@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ProductHero } from "../marketing/ProductHero";
+import { InventoryNotice } from "../marketing/InventoryNotice";
 import { Button } from "../ui/Button";
 import { Field, Select, Input } from "../ui/Input";
 
@@ -8,16 +9,17 @@ const DESTINATIONS = [
   { code: "BLR", label: "Bangalore (BLR)" },
 ];
 
+// First image is LCP — keep a higher width. Rotating slides load later at a lighter size.
 const HERO_IMAGES = [
-  "https://images.pexels.com/photos/912050/pexels-photo-912050.jpeg?auto=compress&cs=tinysrgb&w=1920",
-  "https://images.pexels.com/photos/62623/wing-plane-flying-airplane-62623.jpeg?auto=compress&cs=tinysrgb&w=1920",
-  "https://images.pexels.com/photos/2026324/pexels-photo-2026324.jpeg?auto=compress&cs=tinysrgb&w=1920",
-  "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=1920",
+  "https://images.pexels.com/photos/912050/pexels-photo-912050.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  "https://images.pexels.com/photos/62623/wing-plane-flying-airplane-62623.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/2026324/pexels-photo-2026324.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=1200",
 ];
 
 const TRUST = ["Instant e-tickets", "No hidden fees", "24/7 support"];
 
-export interface SearchFormValues {
+interface SearchFormValues {
   destination: string;
   date: string;
   passengers: number;
@@ -113,9 +115,7 @@ export function HeroSearch({ initial, onSearch }: HeroSearchProps) {
           </div>
         </div>
 
-        <p className="mt-3 text-xs text-neutral-500">
-          Inventory available 4–31 August 2026.
-        </p>
+        <InventoryNotice compact className="mt-3" />
       </form>
     </ProductHero>
   );

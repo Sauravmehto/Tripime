@@ -57,7 +57,11 @@ export function AdminLoginPage() {
             />
           </Field>
 
-          {error && <p className="text-sm text-danger-600">{error}</p>}
+          {error && (
+            <p role="alert" className="text-sm text-danger-600">
+              {error}
+            </p>
+          )}
 
           <Button type="submit" size="lg" className="w-full" disabled={submitting}>
             {submitting ? "Signing in…" : "Sign in"}

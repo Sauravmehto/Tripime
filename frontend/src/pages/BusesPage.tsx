@@ -9,6 +9,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Field, Input } from "../components/ui/Input";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { showComingSoon } from "../lib/comingSoon";
 
 const FEATURES: FeatureItem[] = [
@@ -42,9 +43,9 @@ const FEATURES: FeatureItem[] = [
 ];
 
 const OFFERS = [
-  { title: "Weekend getaway", body: "Flat 20% off on weekend bus bookings.", code: "TRIPBUS" },
-  { title: "First ride offer", body: "Save ₹150 on your first bus booking with us." },
-  { title: "Group travel", body: "Extra discounts when booking 4+ seats together." },
+  { title: "Weekend getaways", body: "Ask about deals for popular weekend routes." },
+  { title: "First ride", body: "New to Tripime? We'll find you a great first-booking rate." },
+  { title: "Group travel", body: "Booking 4+ seats together? We'll negotiate a better fare." },
 ];
 
 const ROUTES = [
@@ -55,6 +56,10 @@ const ROUTES = [
 ];
 
 export function BusesPage() {
+  usePageTitle(
+    "Buses — launching soon",
+    "Bus booking on Tripime is launching soon. Call or WhatsApp our travel experts to book coaches today.",
+  );
   const [from, setFrom] = useState("Delhi");
   const [to, setTo] = useState("Manali");
   const [date, setDate] = useState("2026-08-10");
@@ -67,13 +72,13 @@ export function BusesPage() {
   return (
     <Layout bare>
       <ProductHero
-        eyebrow="Save max on buses"
+        eyebrow="Buses · Launching soon"
         title={
           <>
             Travel comfortably with <span className="text-accent">trusted operators</span>
           </>
         }
-        subtitle="Sleeper, semi-sleeper & AC seater buses — best fares guaranteed"
+        subtitle="Sleeper, semi-sleeper & AC seater buses — tell us your route and we'll help you book with a trusted operator."
         image="https://images.pexels.com/photos/1319515/pexels-photo-1319515.jpeg?auto=compress&cs=tinysrgb&w=1920"
       >
         <form

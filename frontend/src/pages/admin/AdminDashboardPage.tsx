@@ -7,17 +7,23 @@ import {
   CircleCheck,
   Clock,
   IndianRupee,
+  MessageSquare,
   Package,
   RefreshCw,
   Ticket,
 } from "lucide-react";
-import { getAdminStats, listAdminBookings, listAdminPackages } from "../../api/adminApi";
+import {
+  getAdminStats,
+  listAdminBookings,
+  listAdminEnquiries,
+  listAdminPackages,
+} from "../../api/adminApi";
 import { getErrorMessage } from "../../api/apiClient";
 import { Badge, Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { clearAdminToken } from "../../lib/adminAuth";
 import { formatINR } from "../../lib/format";
-import type { AdminStats, Booking, TravelPackage } from "../../types";
+import type { AdminStats, Booking, Enquiry, TravelPackage } from "../../types";
 
 function relativeTime(iso: string): string {
   const d = new Date(iso);
@@ -37,6 +43,7 @@ export function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [packages, setPackages] = useState<TravelPackage[]>([]);
+  const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,14 +66,16 @@ export function AdminDashboardPage() {
       else setLoading(true);
       setError("");
       try {
-        const [statsData, bookingsData, packagesData] = await Promise.all([
+        const [statsData, bookingsData, packagesData, enquiriesData] = await Promise.all([
           getAdminStats(),
           listAdminBookings(),
           listAdminPackages(),
+          listAdminEnquiries(),
         ]);
         setStats(statsData);
         setBookings(bookingsData);
         setPackages(packagesData);
+        setEnquiries(enquiriesData);
       } catch (err) {
         if (handleAuthError(err)) return;
         setError(getErrorMessage(err));
@@ -92,6 +101,11 @@ export function AdminDashboardPage() {
   );
 
   const activePackages = useMemo(() => packages.filter((p) => p.active).length, [packages]);
+
+  const newEnquiries = useMemo(
+    () => enquiries.filter((e) => e.status === "NEW").length,
+    [enquiries],
+  );
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {
@@ -180,7 +194,7 @@ export function AdminDashboardPage() {
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-3">
             <QuickLink
               to="/admin/bookings"
               title="Booking requests"
@@ -194,6 +208,13 @@ export function AdminDashboardPage() {
               subtitle={`${activePackages} active · ${packages.length} total`}
               icon={<Package className="size-5" />}
               tone="primary"
+            />
+            <QuickLink
+              to="/admin/enquiries"
+              title="Enquiries"
+              subtitle={`${newEnquiries} new · ${enquiries.length} total`}
+              icon={<MessageSquare className="size-5" />}
+              tone="success"
             />
           </div>
 

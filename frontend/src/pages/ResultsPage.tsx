@@ -5,6 +5,10 @@ import { searchFlights } from "../api/flightApi";
 import { getErrorMessage } from "../api/apiClient";
 import { Layout } from "../components/Layout";
 import { FlightDateStrip } from "../components/flights/FlightDateStrip";
+import {
+  FlightFareHint,
+  type NeighborFareHint,
+} from "../components/flights/FlightFareHint";
 import { FlightFiltersSidebar } from "../components/flights/FlightFiltersSidebar";
 import { FlightResultCard } from "../components/flights/FlightResultCard";
 import {
@@ -12,6 +16,8 @@ import {
   type ModifySearchValues,
 } from "../components/flights/FlightSearchModifyBar";
 import { FlightSortBar } from "../components/flights/FlightSortBar";
+import { InventoryNotice } from "../components/marketing/InventoryNotice";
+import { FaqList, type FaqItem } from "../components/marketing/FaqList";
 import {
   EMPTY_FILTERS,
   airlineFacets,
@@ -26,8 +32,28 @@ import {
 } from "../components/flights/flightFilters";
 import { Button } from "../components/ui/Button";
 import { useBooking } from "../context/BookingContext";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { INVENTORY_END, INVENTORY_START, addDays, clampDate } from "../lib/airports";
 import { formatDate } from "../lib/format";
 import type { Flight } from "../types";
+
+const FLIGHT_FAQS: FaqItem[] = [
+  {
+    question: "Is the fare shown per person or the total?",
+    answer:
+      "Prices here are per adult. Your exact total for all travellers is shown clearly on the next step before you pay — no surprises.",
+  },
+  {
+    question: "Can I change dates or passengers after booking?",
+    answer:
+      "Not directly on the site yet. Call or WhatsApp us with your booking reference and we'll help you rebook the best way.",
+  },
+  {
+    question: "What if my route isn't listed here?",
+    answer:
+      "We're covering select domestic routes for now. Call or WhatsApp us — our team can often still help you book it directly.",
+  },
+];
 
 export function ResultsPage() {
   const [params, setParams] = useSearchParams();
@@ -36,6 +62,11 @@ export function ResultsPage() {
 
   const origin = params.get("origin") || "DEL";
   const destination = params.get("destination") || "BOM";
+
+  usePageTitle(
+    `Flights ${origin} to ${destination}`,
+    `Compare and book flights from ${origin} to ${destination} on Tripime with transparent pricing.`,
+  );
   const date = params.get("date") || "2026-08-20";
   const passengers = Number(params.get("passengers") || 1);
 
@@ -45,11 +76,13 @@ export function ResultsPage() {
   const [sort, setSort] = useState<SortKey>("cheapest");
   const [filters, setFilters] = useState<FlightFilters>(EMPTY_FILTERS);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [fareHint, setFareHint] = useState<NeighborFareHint | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setSearch({ origin, destination, date, passengers });
     setFilters(EMPTY_FILTERS);
+    setFareHint(null);
 
     async function load() {
       setLoading(true);
@@ -72,6 +105,47 @@ export function ResultsPage() {
       cancelled = true;
     };
   }, [origin, destination, date, passengers, setSearch]);
+
+  // Probe ±2 days for a cheaper fare tip (doesn't block the main results).
+  useEffect(() => {
+    if (loading || flights.length === 0) return;
+
+    let cancelled = false;
+    const currentMin = Math.min(...flights.map((f) => f.fare.totalFare));
+    const candidates = [-2, 2]
+      .map((offset) => addDays(date, offset))
+      .filter((d) => d >= INVENTORY_START && d <= INVENTORY_END && d !== date)
+      .map((d) => clampDate(d, INVENTORY_START, INVENTORY_END));
+
+    async function probe() {
+      const results = await Promise.allSettled(
+        candidates.map((d) =>
+          searchFlights({ origin, destination, date: d, passengers }).then((r) => ({
+            date: d,
+            flights: r.flights,
+          })),
+        ),
+      );
+      if (cancelled) return;
+
+      let best: NeighborFareHint | null = null;
+      for (const result of results) {
+        if (result.status !== "fulfilled" || result.value.flights.length === 0) continue;
+        const minFare = Math.min(...result.value.flights.map((f) => f.fare.totalFare));
+        const savings = currentMin - minFare;
+        if (savings < 200) continue;
+        if (!best || savings > best.savings) {
+          best = { date: result.value.date, minFare, savings };
+        }
+      }
+      setFareHint(best);
+    }
+
+    void probe();
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, flights, origin, destination, date, passengers]);
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
@@ -137,7 +211,11 @@ export function ResultsPage() {
           onSearch={handleModifySearch}
         />
 
+        <InventoryNotice className="mx-1" />
+
         <FlightDateStrip date={date} onChange={handleDateChange} />
+
+        {!loading && <FlightFareHint hint={fareHint} onSelectDate={handleDateChange} />}
 
         <div className="grid gap-5 lg:grid-cols-[268px_minmax(0,1fr)] lg:items-start">
           <aside className="hidden lg:sticky lg:top-20 lg:block">{sidebar}</aside>
@@ -170,7 +248,11 @@ export function ResultsPage() {
             )}
 
             {error && !loading && (
-              <div className="rounded-2xl border border-danger-200 bg-danger-50 p-4 text-sm text-danger-700">
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="rounded-2xl border border-danger-200 bg-danger-50 p-4 text-sm text-danger-700"
+              >
                 {error}
               </div>
             )}
@@ -209,6 +291,15 @@ export function ResultsPage() {
                   onSelect={() => handleSelect(flight)}
                 />
               ))}
+
+            {!loading && (
+              <div className="pt-2">
+                <p className="mb-2 px-1 text-sm font-semibold text-neutral-900">
+                  Frequently asked questions
+                </p>
+                <FaqList items={FLIGHT_FAQS} />
+              </div>
+            )}
           </div>
         </div>
       </div>

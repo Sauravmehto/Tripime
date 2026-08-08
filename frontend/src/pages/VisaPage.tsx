@@ -6,6 +6,7 @@ import { FaqList } from "../components/marketing/FaqList";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { showComingSoon } from "../lib/comingSoon";
 
 const FEATURES: FeatureItem[] = [
@@ -111,10 +112,14 @@ const FAQS = [
 ];
 
 export function VisaPage() {
+  usePageTitle(
+    "Visa assistance — launching soon",
+    "Online visa applications on Tripime are launching soon. Call or WhatsApp our team for help today.",
+  );
   return (
     <Layout bare>
       <ProductHero
-        eyebrow="Apply for visa online"
+        eyebrow="Visa · Launching soon"
         title={
           <>
             Visas made <span className="text-accent">simple</span>

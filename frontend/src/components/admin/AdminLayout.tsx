@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { ClipboardList, LayoutDashboard, LogOut, Package } from "lucide-react";
+import { ClipboardList, LayoutDashboard, LogOut, MessageSquare, Package } from "lucide-react";
 import { Logo } from "../Logo";
 import { clearAdminToken } from "../../lib/adminAuth";
 
@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/bookings", label: "Booking requests", icon: ClipboardList },
   { to: "/admin/packages", label: "Packages", icon: Package },
+  { to: "/admin/enquiries", label: "Enquiries", icon: MessageSquare },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
@@ -20,6 +21,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-neutral-50">
+      <a
+        href="#admin-main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary-700 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-elevated"
+      >
+        Skip to main content
+      </a>
       <aside className="hidden w-60 flex-col border-r border-neutral-200 bg-white sm:flex">
         <div className="border-b border-neutral-100 px-5 py-4">
           <Logo className="h-7" />
@@ -87,7 +94,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             ))}
           </nav>
         </header>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main id="admin-main-content" className="flex-1 p-4 sm:p-6 lg:p-8">
+          {children}
+        </main>
       </div>
     </div>
   );

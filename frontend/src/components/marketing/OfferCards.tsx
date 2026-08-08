@@ -1,7 +1,7 @@
 import { Badge } from "../ui/Card";
 import { Card } from "../ui/Card";
 
-export interface OfferItem {
+interface OfferItem {
   title: string;
   body: string;
   code?: string;

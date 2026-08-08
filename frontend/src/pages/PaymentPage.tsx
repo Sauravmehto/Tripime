@@ -12,6 +12,7 @@ import { Field, Input } from "../components/ui/Input";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { formatINR } from "../lib/format";
 import type { PaymentMethod } from "../types";
 
@@ -31,6 +32,7 @@ const UPI_PROVIDERS = [
 ];
 
 export function PaymentPage() {
+  usePageTitle("Payment", "Complete payment for your Tripime flight booking securely.");
   const navigate = useNavigate();
   const {
     selectedFlight,
@@ -286,7 +288,11 @@ export function PaymentPage() {
               </div>
             )}
 
-            {error && <p className="mt-4 text-sm text-danger-600">{error}</p>}
+            {error && (
+              <p role="alert" className="mt-4 text-sm text-danger-600">
+                {error}
+              </p>
+            )}
 
           </Card>
 

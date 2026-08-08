@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
 import { Layout } from "../components/Layout";
-import {
-  PACKAGE_HELPLINE,
-  PACKAGE_HELPLINE_DISPLAY,
-} from "../components/packages/PackageTicketCard";
+import { EnquiryModal } from "../components/packages/EnquiryModal";
 import { Button } from "../components/ui/Button";
 import { Card, PriceDisplay, Spinner } from "../components/ui/Card";
 import { PageHeader } from "../components/ui/PageHeader";
+import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { getPackage } from "../api/packageApi";
 import { getErrorMessage } from "../api/apiClient";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { HELPLINE_DISPLAY, HELPLINE_NUMBER, whatsappLink } from "../lib/contact";
 import { formatINR } from "../lib/format";
 import type { TravelPackage } from "../types";
 
@@ -25,6 +26,12 @@ export function PackageDetailPage() {
   const [pkg, setPkg] = useState<TravelPackage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [enquiryOpen, setEnquiryOpen] = useState(false);
+
+  usePageTitle(
+    pkg ? pkg.title : "Package details",
+    pkg ? `${pkg.tagline} — ${pkg.duration} in ${pkg.destination}, starting from ${formatINR(pkg.price)}.` : undefined,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -75,7 +82,7 @@ export function PackageDetailPage() {
       )}
 
       {pkg && !loading && (
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
+        <div className="grid gap-6 pb-24 lg:grid-cols-[1.4fr_0.8fr] lg:pb-0">
           <div className="space-y-5">
             <div
               className="overflow-hidden rounded-3xl border border-neutral-200 bg-cover bg-center shadow-soft"
@@ -169,9 +176,27 @@ export function PackageDetailPage() {
             <p className="mt-1 text-sm text-neutral-500">{pkg.priceNote}</p>
 
             <div className="mt-6 space-y-2">
-              <a href={`tel:${PACKAGE_HELPLINE}`} className="block">
-                <Button size="lg" className="w-full">
-                  Call {PACKAGE_HELPLINE_DISPLAY}
+              <Button
+                size="lg"
+                className="hidden w-full lg:inline-flex"
+                onClick={() => setEnquiryOpen(true)}
+              >
+                Enquire now
+              </Button>
+              <a href={`tel:${HELPLINE_NUMBER}`} className="block">
+                <Button size="lg" variant="outline" className="w-full">
+                  Call {HELPLINE_DISPLAY}
+                </Button>
+              </a>
+              <a
+                href={whatsappLink(`Hi Tripime, I'm interested in the "${pkg.title}" package.`)}
+                target="_blank"
+                rel="noreferrer"
+                className="block"
+              >
+                <Button size="lg" variant="secondary" className="w-full">
+                  <MessageCircle className="size-4" aria-hidden />
+                  WhatsApp us
                 </Button>
               </a>
               {pkg.pdfUrl && (
@@ -198,6 +223,19 @@ export function PackageDetailPage() {
             </p>
           </Card>
         </div>
+      )}
+
+      {pkg && !loading && (
+        <StickyActionBar
+          totalLabel="Starting from"
+          total={formatINR(pkg.price)}
+          ctaLabel="Enquire now"
+          onClick={() => setEnquiryOpen(true)}
+        />
+      )}
+
+      {pkg && enquiryOpen && (
+        <EnquiryModal pkg={pkg} onClose={() => setEnquiryOpen(false)} />
       )}
     </Layout>
   );

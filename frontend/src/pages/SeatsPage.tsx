@@ -8,6 +8,7 @@ import { Card } from "../components/ui/Card";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { formatINR } from "../lib/format";
 import {
   generateSeatMap,
@@ -17,6 +18,7 @@ import {
 import type { SelectedSeat } from "../types";
 
 export function SeatsPage() {
+  usePageTitle("Select seats", "Choose seats for your Tripime flight booking.");
   const navigate = useNavigate();
   const {
     selectedFlight,

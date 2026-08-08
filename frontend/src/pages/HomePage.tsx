@@ -1,14 +1,17 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FileCheck2, IndianRupee, MessageCircle, ShieldCheck } from "lucide-react";
 import { Layout } from "../components/Layout";
 import { HeroSearch } from "../components/search/HeroSearch";
 import { FeatureGrid, type FeatureItem } from "../components/marketing/FeatureGrid";
 import { SectionHeading } from "../components/marketing/SectionHeading";
+import { FaqList, type FaqItem } from "../components/marketing/FaqList";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Card, PageContainer } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { useBooking } from "../context/BookingContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const FEATURES: FeatureItem[] = [
   {
@@ -40,11 +43,27 @@ const FEATURES: FeatureItem[] = [
   },
 ];
 
-const STATS = [
-  { value: "50k+", label: "Trips booked" },
-  { value: "4.8/5", label: "Traveller rating" },
-  { value: "20+", label: "Airline partners" },
-  { value: "24/7", label: "Support" },
+const TRUST_POINTS = [
+  {
+    icon: FileCheck2,
+    title: "Instant e-ticket & invoice",
+    body: "Download your PDF ticket right after payment — no waiting.",
+  },
+  {
+    icon: IndianRupee,
+    title: "Transparent pricing",
+    body: "Base fare and taxes shown upfront. No hidden fees at checkout.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Real human support",
+    body: "Call or WhatsApp our travel experts — not a chatbot.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Your data stays safe",
+    body: "Card number and CVV are never sent to or stored on our servers.",
+  },
 ];
 
 const POPULAR_ROUTES = [
@@ -66,42 +85,56 @@ const POPULAR_ROUTES = [
   },
 ];
 
-const TESTIMONIALS = [
+const WHY_CHOOSE_US = [
   {
-    name: "Ananya Sharma",
-    when: "2 weeks ago",
-    quote:
-      "Booked Delhi to Mumbai with Tripime — fares were clear and support helped me pick the best nonstop. Smooth experience end to end.",
+    title: "New platform, no shortcuts",
+    body: "We're a new booking platform built from scratch — every fare and policy shown is checked before it goes live, not scraped or guessed.",
   },
   {
-    name: "Rahul Mehta",
-    when: "3 weeks ago",
-    quote:
-      "Great deals on domestic flights. The team responded quickly when I needed to change dates. Highly recommend!",
+    title: "You talk to a real person",
+    body: "Need help with a fare, a date change, or a package? Call or WhatsApp and get a real travel expert, every time.",
   },
   {
-    name: "Priya Nair",
-    when: "1 month ago",
-    quote:
-      "Easy flight search and helpful offers section. Booking felt hassle-free from search to confirmation.",
+    title: "We tell you what's not live yet",
+    body: "Flights and holiday packages are bookable today. Hotels, buses and visas are marked \"Soon\" — we'd rather be upfront than overpromise.",
   },
 ];
 
 const AIRLINES = ["Air India", "IndiGo", "Akasa Air", "Air India Express"];
 
-function Stars() {
-  return (
-    <div className="flex gap-0.5" aria-label="Rated 5 out of 5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <svg key={i} viewBox="0 0 20 20" className="size-4 fill-warning-500" aria-hidden>
-          <path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5Z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
+const HOME_FAQS: FaqItem[] = [
+  {
+    question: "Is Tripime live for real bookings?",
+    answer:
+      "Yes — flights are bookable end-to-end today with instant e-tickets. Holiday packages are enquiry-based: you tell us what you want and a travel expert confirms pricing and payment directly. Hotels, buses and visas are launching soon.",
+  },
+  {
+    question: "Is my payment information safe?",
+    answer:
+      "Your card number and CVV are validated in your browser only and are never sent to or stored on our servers. See our Privacy Policy for details.",
+  },
+  {
+    question: "Can I get a refund if my plans change?",
+    answer:
+      "Refund eligibility depends on the fare rules of your ticket. Check our Refund & Cancellation Policy, or just call us and we'll check for you.",
+  },
+  {
+    question: "How do I find my booking later?",
+    answer:
+      "Head to the My Booking page and enter your booking ID or PNR along with the email or phone you booked with.",
+  },
+  {
+    question: "What about hotels, buses or a visa?",
+    answer:
+      "Those are launching soon on Tripime. Call or WhatsApp us today and our team will help you book directly in the meantime.",
+  },
+];
 
 export function HomePage() {
+  usePageTitle(
+    "Book Domestic Flights & Holiday Packages",
+    "Search and book domestic flights and curated holiday packages on Tripime, with transparent pricing and real human support by call or WhatsApp.",
+  );
   const navigate = useNavigate();
   const { setSearch } = useBooking();
   const [email, setEmail] = useState("");
@@ -133,19 +166,19 @@ export function HomePage() {
 
       <section className="border-y border-neutral-200 bg-white">
         <PageContainer className="py-8 sm:py-10">
-          <dl className="grid grid-cols-2 gap-6 text-center sm:gap-8 lg:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <dt className="sr-only">{stat.label}</dt>
-                <dd className="text-2xl font-bold tracking-tight text-primary-700 sm:text-3xl">
-                  {stat.value}
-                </dd>
-                <p className="mt-1 text-xs font-medium uppercase tracking-wide text-neutral-500 sm:text-sm">
-                  {stat.label}
-                </p>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {TRUST_POINTS.map(({ icon: Icon, title, body }) => (
+              <div key={title} className="flex items-start gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700">
+                  <Icon className="size-4" aria-hidden />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-neutral-900">{title}</p>
+                  <p className="mt-0.5 text-xs text-neutral-500">{body}</p>
+                </div>
               </div>
             ))}
-          </dl>
+          </div>
         </PageContainer>
       </section>
 
@@ -161,7 +194,7 @@ export function HomePage() {
       <Section tone="white">
         <SectionHeading
           title="Popular routes"
-          subtitle="Quick picks — tap a route to search live fares."
+          subtitle="Illustrative starting fares — tap a route to search live prices for your dates."
         />
         <div className="grid gap-4 sm:grid-cols-2">
           {POPULAR_ROUTES.map((r) => (
@@ -202,6 +235,9 @@ export function HomePage() {
                   <span className="text-sm text-neutral-500">
                     from{" "}
                     <span className="text-base font-bold text-primary-700">{r.price}</span>
+                    <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+                      illus.
+                    </span>
                   </span>
                 </div>
               </Card>
@@ -213,25 +249,14 @@ export function HomePage() {
       <Section>
         <SectionHeading
           className="mx-auto text-center"
-          title="What travellers say"
-          subtitle="Real feedback from Tripime customers."
+          title="Why travel with Tripime"
+          subtitle="We're new — here's exactly what that means for you."
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
-            <Card key={t.name} className="flex h-full flex-col">
-              <Stars />
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-neutral-600">
-                “{t.quote}”
-              </p>
-              <div className="mt-5 flex items-center gap-3 border-t border-neutral-100 pt-4">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
-                  {t.name.charAt(0)}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-neutral-900">{t.name}</p>
-                  <p className="text-xs text-neutral-500">{t.when}</p>
-                </div>
-              </div>
+          {WHY_CHOOSE_US.map((item) => (
+            <Card key={item.title} className="h-full">
+              <p className="font-semibold text-neutral-900">{item.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-600">{item.body}</p>
             </Card>
           ))}
         </div>
@@ -254,6 +279,26 @@ export function HomePage() {
           </div>
         </PageContainer>
       </section>
+
+      <Section tone="white" narrow>
+        <SectionHeading
+          className="mx-auto text-center"
+          title="Frequently asked questions"
+          subtitle="Quick, honest answers — call us if you need more."
+        />
+        <FaqList items={HOME_FAQS} />
+        <p className="mt-4 text-center text-sm text-neutral-500">
+          Read the full details in our{" "}
+          <Link to="/privacy" className="font-semibold text-primary-700 hover:text-primary-800">
+            Privacy Policy
+          </Link>{" "}
+          and{" "}
+          <Link to="/refund-policy" className="font-semibold text-primary-700 hover:text-primary-800">
+            Refund Policy
+          </Link>
+          .
+        </p>
+      </Section>
 
       <Section tone="dark" narrow>
         <div className="text-center">

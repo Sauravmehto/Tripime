@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { Phone, Ticket } from "lucide-react";
 import { Logo } from "../Logo";
+import { HELPLINE_DISPLAY, telLink } from "../../lib/contact";
 
-const NAV_LINKS = [
+const NAV_LINKS: { to: string; label: string; soon?: boolean }[] = [
   { to: "/", label: "Flights" },
-  { to: "/hotels", label: "Hotels" },
-  { to: "/buses", label: "Buses" },
   { to: "/packages", label: "Packages" },
-  { to: "/visa", label: "Visa" },
+  { to: "/hotels", label: "Hotels", soon: true },
+  { to: "/buses", label: "Buses", soon: true },
+  { to: "/visa", label: "Visa", soon: true },
 ];
 
 interface HeaderProps {
@@ -57,10 +59,47 @@ export function Header({ overlay = false }: HeaderProps) {
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} className={navLinkClass} end={link.to === "/"}>
-                {link.label}
+                <span className="inline-flex items-center gap-1.5">
+                  {link.label}
+                  {link.soon && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                        isOverlay ? "bg-white/20 text-white" : "bg-secondary-100 text-secondary-700"
+                      }`}
+                    >
+                      Soon
+                    </span>
+                  )}
+                </span>
               </NavLink>
             ))}
           </nav>
+
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              to="/my-booking"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold transition ${
+                isOverlay
+                  ? "text-white/90 hover:bg-white/10 hover:text-white"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-primary-700"
+              }`}
+            >
+              <Ticket className="size-4" aria-hidden />
+              My Booking
+            </Link>
+            <a
+              href={telLink()}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold transition ${
+                isOverlay
+                  ? "text-white/90 hover:bg-white/10 hover:text-white"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-primary-700"
+              }`}
+              title={`Call ${HELPLINE_DISPLAY}`}
+            >
+              <Phone className="size-4" aria-hidden />
+              Support
+            </a>
+          </div>
 
           <button
             type="button"
@@ -95,7 +134,7 @@ export function Header({ overlay = false }: HeaderProps) {
                     end={link.to === "/"}
                     onClick={() => setMenuOpen(false)}
                     className={({ isActive }) =>
-                      `block rounded-lg px-3 py-2.5 ${
+                      `flex items-center gap-2 rounded-lg px-3 py-2.5 ${
                         isActive
                           ? "bg-primary-50 text-primary-700"
                           : "text-neutral-700 hover:bg-neutral-50"
@@ -103,10 +142,32 @@ export function Header({ overlay = false }: HeaderProps) {
                     }
                   >
                     {link.label}
+                    {link.soon && (
+                      <span className="rounded-full bg-secondary-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary-700">
+                        Soon
+                      </span>
+                    )}
                   </NavLink>
                 </li>
               ))}
             </ul>
+            <div className="mt-2 flex flex-col gap-1 border-t border-neutral-100 pt-2 text-sm font-semibold">
+              <Link
+                to="/my-booking"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-neutral-700 hover:bg-neutral-50"
+              >
+                <Ticket className="size-4" aria-hidden />
+                My Booking
+              </Link>
+              <a
+                href={telLink()}
+                className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-neutral-700 hover:bg-neutral-50"
+              >
+                <Phone className="size-4" aria-hidden />
+                Call support · {HELPLINE_DISPLAY}
+              </a>
+            </div>
           </nav>
         )}
       </header>

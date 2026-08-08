@@ -4,7 +4,7 @@ export type SortKey = "cheapest" | "shortest" | "earliest" | "latest";
 
 export type TimeSlotId = "early" | "morning" | "afternoon" | "night";
 
-export interface TimeSlot {
+interface TimeSlot {
   id: TimeSlotId;
   label: string;
   hint: string;
@@ -53,11 +53,11 @@ export interface AirlineFacet {
   cheapest: number;
 }
 
-export function hourOf(time: string): number {
+function hourOf(time: string): number {
   return Number(time.slice(0, 2));
 }
 
-export function slotOf(time: string): TimeSlotId {
+function slotOf(time: string): TimeSlotId {
   const hour = hourOf(time);
   const slot = TIME_SLOTS.find((s) => hour >= s.from && hour < s.to);
   return slot?.id ?? "night";

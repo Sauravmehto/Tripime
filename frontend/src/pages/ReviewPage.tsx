@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Pencil, Phone, UserRound } from "lucide-react";
-import Swal from "sweetalert2";
 import { FareSummaryCard } from "../components/flights/FareSummaryCard";
 import { FlightItineraryCard } from "../components/flights/FlightItineraryCard";
 import { FlightRouteBar } from "../components/flights/FlightRouteBar";
@@ -11,9 +10,11 @@ import { Card } from "../components/ui/Card";
 import { Stepper } from "../components/ui/Stepper";
 import { StickyActionBar } from "../components/ui/StickyActionBar";
 import { useBooking } from "../context/BookingContext";
-import { formatDate, formatINR } from "../lib/format";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { formatINR } from "../lib/format";
 
 export function ReviewPage() {
+  usePageTitle("Review booking", "Review your flight and traveller details before choosing seats.");
   const navigate = useNavigate();
   const { search, selectedFlight, passengers, contact } = useBooking();
 
@@ -31,45 +32,8 @@ export function ReviewPage() {
   const total = selectedFlight.fare.totalFare * count;
   const backToResults = `/flights?origin=${search.origin}&destination=${search.destination}&date=${search.date}&passengers=${search.passengers}`;
 
-  async function handleConfirmContinue() {
-    if (!selectedFlight) return;
-
-    const result = await Swal.fire({
-      title: "Confirm flight details?",
-      html: `
-        <div style="text-align:left;font-size:14px;line-height:1.6;color:#334155;font-family:Inter,system-ui,sans-serif">
-          <p><strong>Route:</strong> ${selectedFlight.origin.city} (${selectedFlight.origin.code}) → ${selectedFlight.destination.city} (${selectedFlight.destination.code})</p>
-          <p><strong>Travel date:</strong> ${formatDate(selectedFlight.departureDate)}</p>
-          <p><strong>Airline:</strong> ${selectedFlight.airline.name}</p>
-          <p><strong>Flight:</strong> ${selectedFlight.flightNumber}</p>
-          <p><strong>Total fare:</strong> ${formatINR(total)}</p>
-          <p style="margin-top:12px;color:#64748b">Please verify your flight and passenger details before continuing to seat selection.</p>
-        </div>
-      `,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, continue",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#2563eb",
-      cancelButtonColor: "#94a3b8",
-      reverseButtons: true,
-      allowOutsideClick: false,
-    });
-
-    if (!result.isConfirmed) return;
-
-    Swal.fire({
-      title: "Preparing your booking…",
-      html: "Please wait while we prepare your seat selection.",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    await new Promise((resolve) => window.setTimeout(resolve, 900));
-    Swal.close();
+  function handleConfirmContinue() {
+    // This page is already the confirmation step — no second modal.
     navigate("/booking/seats");
   }
 
@@ -157,7 +121,7 @@ export function ReviewPage() {
               size="lg"
               variant="coral"
               className="hidden w-full lg:inline-flex"
-              onClick={() => void handleConfirmContinue()}
+              onClick={handleConfirmContinue}
             >
               Confirm &amp; continue
             </Button>
@@ -168,7 +132,7 @@ export function ReviewPage() {
       <StickyActionBar
         total={formatINR(total)}
         ctaLabel="Confirm & continue"
-        onClick={() => void handleConfirmContinue()}
+        onClick={handleConfirmContinue}
       />
     </Layout>
   );

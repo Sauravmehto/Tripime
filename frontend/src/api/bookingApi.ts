@@ -11,6 +11,11 @@ export async function getBooking(bookingId: string): Promise<Booking> {
   return data;
 }
 
+export async function lookupBooking(reference: string, contact: string): Promise<Booking> {
+  const { data } = await apiClient.post<Booking>("/api/bookings/lookup", { reference, contact });
+  return data;
+}
+
 export async function downloadInvoice(bookingId: string): Promise<void> {
   const response = await apiClient.get(`/api/bookings/${bookingId}/invoice`, {
     responseType: "blob",

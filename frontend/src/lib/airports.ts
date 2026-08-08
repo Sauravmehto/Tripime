@@ -1,10 +1,10 @@
-export interface AirportInfo {
+interface AirportInfo {
   code: string;
   city: string;
   airport: string;
 }
 
-export const AIRPORTS: Record<string, AirportInfo> = {
+const AIRPORTS: Record<string, AirportInfo> = {
   DEL: { code: "DEL", city: "Delhi", airport: "Indira Gandhi International" },
   BOM: { code: "BOM", city: "Mumbai", airport: "Chhatrapati Shivaji Maharaj International" },
   BLR: { code: "BLR", city: "Bangalore", airport: "Kempegowda International" },

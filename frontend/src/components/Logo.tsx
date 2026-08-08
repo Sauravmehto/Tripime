@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png";
+import logo from "../assets/tripime_logo.png";
 
 interface LogoProps {
   className?: string;

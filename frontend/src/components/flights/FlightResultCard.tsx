@@ -4,6 +4,8 @@ import {
   ChevronDown,
   Clock,
   Luggage,
+  MessageCircle,
+  Phone,
   Plane,
   ShieldCheck,
   Sparkles,
@@ -11,6 +13,7 @@ import {
 import { AirlineMark } from "./AirlineMark";
 import { Button } from "../ui/Button";
 import { formatDuration, formatINR } from "../../lib/format";
+import { telLink, whatsappLink } from "../../lib/contact";
 import type { Flight } from "../../types";
 
 type DetailTab = "flight" | "fare" | "baggage" | "policy";
@@ -183,6 +186,28 @@ export function FlightResultCard({
             {tab === "fare" && <FareBreakup flight={flight} passengers={passengers} />}
             {tab === "baggage" && <BaggageDetail flight={flight} />}
             {tab === "policy" && <PolicyDetail flight={flight} />}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 bg-neutral-50/60 px-4 py-2.5">
+            <p className="text-xs text-neutral-500">Not sure this is the right flight?</p>
+            <div className="flex items-center gap-3">
+              <a
+                href={telLink()}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:text-primary-800"
+              >
+                <Phone className="size-3.5" aria-hidden /> Call an expert
+              </a>
+              <a
+                href={whatsappLink(
+                  `Hi Tripime, I have a question about the ${flight.airline.name} ${flight.flightNumber} flight (${flight.origin.code} → ${flight.destination.code}).`,
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-success-700 hover:text-success-800"
+              >
+                <MessageCircle className="size-3.5" aria-hidden /> WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       )}

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 export interface FaqItem {
   question: string;
-  answer: string;
+  answer: ReactNode;
 }
 
 export function FaqList({ items }: { items: FaqItem[] }) {

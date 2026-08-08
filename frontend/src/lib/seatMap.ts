@@ -1,6 +1,6 @@
 import type { SeatType } from "../types";
 
-export type SeatStatus = "available" | "occupied" | "selected" | "extra_legroom";
+type SeatStatus = "available" | "occupied" | "selected" | "extra_legroom";
 
 export interface SeatCell {
   seatNumber: string;
@@ -32,7 +32,7 @@ function mulberry32(seed: number) {
   };
 }
 
-export function priceForSeat(letter: string, row: number, isExtraLegroom: boolean): {
+function priceForSeat(letter: string, row: number, isExtraLegroom: boolean): {
   seatType: SeatType;
   price: number;
 } {

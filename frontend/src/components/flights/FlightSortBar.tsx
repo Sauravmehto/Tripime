@@ -38,7 +38,7 @@ export function FlightSortBar({ value, onChange, teasers }: FlightSortBarProps) 
             <span className="block truncate text-sm font-semibold">{option.label}</span>
             <span className="block truncate text-xs text-neutral-500">
               {teaser
-                ? `${formatINR(teaser.price)} · ${formatDuration(teaser.minutes)}`
+                ? `${formatINR(teaser.price)}/adult · ${formatDuration(teaser.minutes)}`
                 : "No flights"}
             </span>
           </button>

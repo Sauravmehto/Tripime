@@ -23,6 +23,9 @@ export function ProductHero({
 }: ProductHeroProps) {
   const gallery = images && images.length > 0 ? images : image ? [image] : [];
   const [activeIndex, setActiveIndex] = useState(0);
+  // Only the first (LCP) image loads eagerly; the rest are mounted after the
+  // initial paint so they don't compete for bandwidth with above-the-fold assets.
+  const [mountedCount, setMountedCount] = useState(1);
 
   useEffect(() => {
     if (gallery.length < 2) return;
@@ -33,9 +36,15 @@ export function ProductHero({
     return () => window.clearInterval(id);
   }, [gallery.length]);
 
+  useEffect(() => {
+    if (mountedCount >= gallery.length) return;
+    const id = window.setTimeout(() => setMountedCount((c) => c + 1), 1500);
+    return () => window.clearTimeout(id);
+  }, [mountedCount, gallery.length]);
+
   return (
     <section className="relative isolate overflow-hidden">
-      {gallery.map((src, index) => (
+      {gallery.slice(0, mountedCount).map((src, index) => (
         <div
           key={src}
           className={`absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out ${
