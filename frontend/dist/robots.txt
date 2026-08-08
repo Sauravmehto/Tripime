@@ -1,0 +1,11 @@
+# Tripime — crawler rules
+# Update the sitemap host below (and sitemap.xml) once the production
+# domain is finalised.
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /booking/
+Disallow: /my-booking
+
+Sitemap: https://www.tripime.com/sitemap.xml
