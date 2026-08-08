@@ -169,6 +169,7 @@ Current `requirements.txt` also installs on Render’s default 3.14 (prebuilt wh
 
 - URL: `https://YOUR-SITE.netlify.app/admin/login`
 - Credentials: whatever you set as `ADMIN_USERNAME` / `ADMIN_PASSWORD` on Render.
+- **Before real users touch this:** read [`backend/SECURITY_CHECKLIST.md`](backend/SECURITY_CHECKLIST.md) — it lists the insecure dev defaults you must override and other hardening steps.
 
 ### Local vs production API URL
 
