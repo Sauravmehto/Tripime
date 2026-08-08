@@ -706,5 +706,90 @@
       "status": "SUCCESS",
       "paidAt": "2026-08-04T00:06:27.576679+00:00"
     }
+  },
+  {
+    "bookingId": "BK-20260808-10009",
+    "pnr": "A82O08",
+    "status": "CONFIRMED",
+    "createdAt": "2026-08-08T11:42:31.828308+00:00",
+    "confirmedAt": "2026-08-08T11:42:51.740685+00:00",
+    "flight": {
+      "id": "FL-20260820-DEL-BLR-001",
+      "airline": {
+        "name": "IndiGo",
+        "code": "6E"
+      },
+      "flightNumber": "6E 116",
+      "origin": {
+        "city": "Delhi",
+        "airport": "Indira Gandhi International Airport",
+        "code": "DEL"
+      },
+      "destination": {
+        "city": "Bangalore",
+        "airport": "Kempegowda International Airport",
+        "code": "BLR"
+      },
+      "departureDate": "2026-08-20",
+      "departureTime": "06:10",
+      "arrivalDate": "2026-08-20",
+      "arrivalTime": "08:50",
+      "durationMinutes": 160,
+      "aircraft": "Airbus A321neo",
+      "cabinClass": "Economy",
+      "fare": {
+        "baseFare": 5100,
+        "taxes": 950,
+        "totalFare": 6050,
+        "currency": "INR"
+      },
+      "availableSeats": 12,
+      "baggage": {
+        "cabin": "7 KG",
+        "checkIn": "15 KG"
+      },
+      "refundable": false,
+      "status": "AVAILABLE"
+    },
+    "passengers": [
+      {
+        "title": "Mr",
+        "firstName": "Saurav",
+        "lastName": "Mehto",
+        "gender": "Male",
+        "dateOfBirth": "1998-02-23",
+        "seatNumber": "8D"
+      }
+    ],
+    "contact": {
+      "email": "sauravmehto.98@gmail.com",
+      "phone": "+919643932859"
+    },
+    "passengerCount": 1,
+    "seats": [
+      {
+        "passengerIndex": 0,
+        "seatNumber": "8D",
+        "seatType": "standard",
+        "price": 0
+      }
+    ],
+    "fare": {
+      "baseFare": 5100,
+      "taxes": 950,
+      "totalFare": 6050,
+      "currency": "INR"
+    },
+    "seatCharges": 0,
+    "totalAmount": 6050,
+    "payment": {
+      "paymentId": "PAY-E5EE8DE59A27",
+      "transactionId": "TXN-6FB9BE21E7",
+      "method": "upi",
+      "amount": 6050,
+      "currency": "INR",
+      "status": "SUCCESS",
+      "paidAt": "2026-08-08T11:42:31.802414+00:00"
+    }
   }
 ]

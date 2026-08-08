@@ -20,3 +20,9 @@ python scripts/generate_flights.py
 See the root [README.md](../README.md#deploy-github--render--netlify). Blueprint: [`../render.yaml`](../render.yaml).
 
 Required env: `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_JWT_SECRET`, `CORS_ORIGINS` (your Netlify URL). Optional: `SMTP_*` for confirmation emails.
+
+## Before going live
+
+Read [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) — it covers the admin auth
+model, insecure dev defaults you must override, and hardening steps to do before
+real users touch this backend.

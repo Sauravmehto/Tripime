@@ -73,6 +73,11 @@ class BookingCreateRequest(BaseModel):
     payment: PaymentMetaInput
 
 
+class BookingLookupRequest(BaseModel):
+    reference: str = Field(..., min_length=1, description="Booking ID or PNR")
+    contact: str = Field(..., min_length=1, description="Email or phone used to book")
+
+
 class BookingPassenger(BaseModel):
     title: str
     firstName: str

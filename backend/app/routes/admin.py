@@ -6,10 +6,12 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from app import config
 from app.models.admin import AdminLoginRequest, AdminLoginResponse, AdminStats
 from app.models.booking import Booking
+from app.models.enquiry import Enquiry, EnquiryStatusUpdate
 from app.models.package import Package, PackageCreate, PackageUpdate
 from app.services.admin_auth import create_admin_token, require_admin
 from app.services.booking_service import get_booking_service
 from app.services.email_service import send_booking_confirmation_email
+from app.services.enquiry_service import get_enquiry_service
 from app.services.package_service import get_package_service
 
 router = APIRouter()
@@ -29,16 +31,6 @@ def admin_login(payload: AdminLoginRequest) -> AdminLoginResponse:
 @router.get("/bookings", response_model=list[Booking], dependencies=[Depends(require_admin)])
 def list_bookings() -> list[Booking]:
     return get_booking_service().list_bookings()
-
-
-@router.get(
-    "/bookings/{booking_id}", response_model=Booking, dependencies=[Depends(require_admin)]
-)
-def get_booking(booking_id: str) -> Booking:
-    booking = get_booking_service().get_booking(booking_id)
-    if booking is None:
-        raise HTTPException(status_code=404, detail=f"Booking '{booking_id}' not found.")
-    return booking
 
 
 @router.post(
@@ -99,3 +91,20 @@ def admin_update_package(package_id: str, payload: PackageUpdate) -> Package:
 )
 def admin_delete_package(package_id: str) -> None:
     get_package_service().delete_package(package_id)
+
+
+@router.get("/enquiries", response_model=list[Enquiry], dependencies=[Depends(require_admin)])
+def admin_list_enquiries() -> list[Enquiry]:
+    return get_enquiry_service().list_enquiries()
+
+
+@router.post(
+    "/enquiries/{enquiry_id}/status",
+    response_model=Enquiry,
+    dependencies=[Depends(require_admin)],
+)
+def admin_update_enquiry_status(enquiry_id: str, payload: EnquiryStatusUpdate) -> Enquiry:
+    enquiry = get_enquiry_service().update_status(enquiry_id, payload.status)
+    if enquiry is None:
+        raise HTTPException(status_code=404, detail=f"Enquiry '{enquiry_id}' not found.")
+    return enquiry

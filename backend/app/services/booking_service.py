@@ -25,6 +25,17 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BOOKINGS_PATH = DATA_DIR / "bookings.json"
 
 
+def _normalize_contact(value: str) -> str:
+    """Lowercase + strip for emails, digits-only for phone numbers, so
+    "+91 98765-43210" and "9876543210" (or mismatched email casing) still match."""
+    value = value.strip().lower()
+    digits = "".join(ch for ch in value if ch.isdigit())
+    # If it looks like a phone number (mostly digits), compare digits only.
+    if digits and len(digits) >= 7 and len(digits) >= len(value) - 2:
+        return digits
+    return value
+
+
 class BookingService:
     def __init__(
         self,
@@ -154,6 +165,25 @@ class BookingService:
     def get_booking(self, booking_id: str) -> Booking | None:
         for booking in self._bookings:
             if booking.bookingId == booking_id:
+                return booking
+        return None
+
+    def find_booking_by_reference(self, reference: str, contact: str) -> Booking | None:
+        """Look up a booking by booking ID or PNR, verified against the email/phone
+        on file. Used by the public "My Booking" page — deliberately requires both
+        pieces of information so booking IDs (which are sequential, not secret)
+        can't be enumerated to read other travellers' details."""
+        ref_normalized = reference.strip().upper()
+        contact_normalized = _normalize_contact(contact)
+        if not ref_normalized or not contact_normalized:
+            return None
+
+        for booking in self._bookings:
+            if ref_normalized not in {booking.bookingId.upper(), booking.pnr.upper()}:
+                continue
+            booking_email = _normalize_contact(booking.contact.email)
+            booking_phone = _normalize_contact(booking.contact.phone)
+            if contact_normalized in {booking_email, booking_phone}:
                 return booking
         return None
 
